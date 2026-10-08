@@ -1,6 +1,6 @@
 # Instrucciones Excel App
 
-Aplicación web para crear, editar e importar instrucciones de trabajo en formato Excel.
+Aplicación web dedicada a la empresa gualeguaychence Hermann para crear , editar e importar instrucciones de trabajo de piezas metálicas en formato Excel.
 
 ## Descripción
 
@@ -23,7 +23,6 @@ La app está desarrollada en Python con Flask y se ejecuta localmente en Windows
 - Windows 10 o 11
 - Python 3.11 o superior
 - Una edición de Excel de escritorio compatible
-- Conexión a GitHub para subir el proyecto (si querés publicarlo)
 
 ## Instalación
 
@@ -37,29 +36,12 @@ install.bat
 
 Esto crea el entorno virtual y instala las dependencias.
 
-### Opción 2: instalación manual
-
-```powershell
-cd "d:\Codigo, programas y webs\instrucciones_excel_app"
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
-pip install -r requirements.txt
-```
-
 ## Ejecución
 
 Para abrir la aplicación:
 
 ```powershell
 run.bat
-```
-
-O manualmente:
-
-```powershell
-.\.venv\Scripts\Activate.ps1
-python app.py
 ```
 
 La app queda disponible en:
@@ -105,28 +87,6 @@ instrucciones_excel_app/
 
 - La aplicación guarda datos localmente en la carpeta de instancia de Flask.
 - La versión actual está pensada para uso local y Windows.
-- Si vas a publicar este repositorio en GitHub, conviene revisar las configuraciones sensibles antes de hacer push.
-
-## Subir a GitHub
-
-Si querés publicar este proyecto en un repositorio público, desde la terminal de VS Code ejecutá:
-
-```powershell
-git init
-git add .
-git commit -m "Primer commit"
-git branch -M main
-git remote add origin https://github.com/TU_USUARIO/TU_REPO.git
-git push -u origin main
-```
-
-Y luego, para actualizar el README o cualquier cambio posterior:
-
-```powershell
-git add README.md
-git commit -m "Actualizo README"
-git push
-```
 
 ## Licencia
 
