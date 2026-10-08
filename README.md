@@ -90,7 +90,7 @@ instrucciones_excel_app/
 
 ## Licencia
 
-Este proyecto no incluye licencia definida por el momento. Si querés publicarlo en GitHub como repositorio abierto, podés agregar una licencia más adelante según tu uso.
+El código y diseño no deben ser reutilizados comercialmente sin autorización.
 
 ---
 
