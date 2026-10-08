@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Instrucciones de trabajo{% endblock %}
+{% block content %}
+<section class="hero">
+  <div>
+    <p class="eyebrow">Generador controlado</p>
+    <h1>Creá instrucciones claras a partir de la plantilla definitiva.</h1>
+    <p>Cargá los pasos, imágenes y datos técnicos. La aplicación distribuye cinco secuencias por hoja y prepara VARIOS y VISUAL automáticamente.</p>
+  </div>
+  <a class="button primary" href="{{ url_for('instructions.new_instruction') }}">Crear instrucción</a>
+</section>
+
+{% if import_error %}<div class="alert error"><strong>No se pudo importar el Excel.</strong><span>{{ import_error }}</span></div>{% endif %}
+<section class="card import-card">
+  <div>
+    <p class="eyebrow">Normalizar un archivo anterior</p>
+    <h2>Importar Excel existente</h2>
+    <p>Recupera encabezados, secuencias e imágenes de VARIOS. Después abre una revisión antes de generar el archivo definitivo.</p>
+  </div>
+  <form method="post" action="{{ url_for('instructions.import_instruction') }}" enctype="multipart/form-data" class="import-form">
+    <label><span>Archivo Excel (.xlsx)</span><input type="file" name="source_excel" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" required></label>
+    <button class="button secondary" type="submit">Analizar e importar</button>
+  </form>
+</section>
+
+<section class="section-head"><div><h2>Trabajos guardados</h2><p>{{ instructions|length }} instrucción(es) en esta PC</p></div></section>
+{% if instructions %}
+<div class="cards">
+  {% for item in instructions %}
+  <article class="card instruction-card">
+    <div><span class="pill">#{{ item.id }}</span><h3>{{ item.title }}</h3><p>Actualizada: {{ item.updated_at[:10] }}</p></div>
+    <div class="card-actions">
+      {% if item.output_filename %}<span class="status ready">Excel generado</span>{% else %}<span class="status draft">Borrador</span>{% endif %}
+      <a class="button secondary" href="{{ url_for('instructions.instruction_detail', instruction_id=item.id) }}">Abrir</a>
+    </div>
+  </article>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty"><div class="empty-icon">＋</div><h3>Todavía no hay instrucciones</h3><p>La primera se guarda en esta computadora y luego puede editarse o duplicarse.</p><a class="button primary" href="{{ url_for('instructions.new_instruction') }}">Empezar</a></div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Instrucciones de trabajo{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="{{ url_for('instructions.index') }}">
+      <span class="brand-mark">IT</span>
+      <span><strong>Instrucciones de trabajo</strong><small>Generador Excel local</small></span>
+    </a>
+    <nav>
+      <a href="{{ url_for('instructions.index') }}">Inicio</a>
+      <a href="{{ url_for('instructions.diagnostics') }}">Diagnóstico</a>
+      <a class="button compact" href="{{ url_for('instructions.new_instruction') }}">Nueva instrucción</a>
+    </nav>
+  </header>
+  <main class="shell">{% block content %}{% endblock %}</main>
+  <footer>Aplicación local · Los datos permanecen en esta computadora.</footer>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

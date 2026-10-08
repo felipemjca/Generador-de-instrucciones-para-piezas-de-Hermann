@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}{{ instruction.title }}{% endblock %}
+{% block content %}
+<div class="section-head">
+  <div><p class="eyebrow">Instrucción #{{ instruction.id }}</p><h1>{{ instruction.title }}</h1><p>Puesto {{ instruction.payload.general.station }} · {{ instruction.payload.sequences|length }} pasos · {{ ((instruction.payload.sequences|length + 4) // 5) }} hoja(s) numerada(s)</p></div>
+  <a class="button secondary" href="{{ url_for('instructions.edit_instruction', instruction_id=instruction.id) }}">Editar</a>
+</div>
+{% if generation_error %}<div class="alert error"><strong>No se pudo generar el Excel.</strong><span>{{ generation_error }}</span></div>{% endif %}
+<div class="detail-grid">
+  <section class="card summary-card">
+    <h2>Resumen</h2>
+    <dl>
+      <div><dt>Denominación</dt><dd>{{ instruction.payload.general.operation_name }}</dd></div>
+      <div><dt>N.º operación actual</dt><dd>{{ instruction.payload.general.operation_number or '—' }}</dd></div>
+      <div><dt>Pieza</dt><dd>{{ instruction.payload.general.piece_name }}</dd></div>
+      <div><dt>Revisión</dt><dd>{{ instruction.payload.general.revision }}</dd></div>
+      <div><dt>Controles manuales</dt><dd>{{ instruction.payload.controls|length }}</dd></div>
+    </dl>
+  </section>
+  <section class="card action-card">
+    <h2>Archivo Excel</h2>
+    <p>Excel de escritorio completará una copia de la plantilla, incluyendo las imágenes vinculadas de VARIOS.</p>
+    <form method="post" action="{{ url_for('instructions.generate_instruction', instruction_id=instruction.id) }}"><button class="button primary wide" type="submit">Generar Excel definitivo</button></form>
+    {% if instruction.output_filename %}<a class="button success wide" href="{{ url_for('instructions.download_output', filename=instruction.output_filename) }}">Descargar {{ instruction.output_filename }}</a>{% endif %}
+  </section>
+</div>
+<section class="card steps-preview">
+  <h2>Secuencias</h2>
+  {% for step in instruction.payload.sequences %}
+  <div class="preview-row"><span class="step-number">{{ step.number }}</span><div><strong>{{ step.sequence }}</strong><small>{{ step.visual_summary }}</small></div><div class="step-tags">{% if step.safety_symbol %}<span class="pill">✚ Seguridad</span>{% endif %}{% if step.quality_symbol %}<span class="pill">◇ Calidad</span>{% endif %}{% if step.triangle_s_number %}<span class="pill">{{ step.triangle_s_number }}△S</span>{% endif %}<span class="pill">{% if step.image_path %}Con imagen{% else %}Sin imagen{% endif %}</span></div></div>
+  {% endfor %}
+</section>
+<form class="danger-zone" method="post" action="{{ url_for('instructions.delete_instruction', instruction_id=instruction.id) }}" onsubmit="return confirm('¿Eliminar esta instrucción y sus archivos?')"><button class="text-danger" type="submit">Eliminar instrucción</button></form>
+{% endblock %}

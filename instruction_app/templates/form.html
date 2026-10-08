@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Editar' if instruction else 'Nueva' }} instrucción{% endblock %}
+{% block content %}
+<div class="form-heading"><div><p class="eyebrow">{{ 'Editar instrucción #' ~ instruction.id if instruction else 'Nueva instrucción' }}</p><h1>Datos de la instrucción</h1><p>Los campos generales con * son obligatorios. Las secuencias y resúmenes vacíos se guardan como * Incompleto.</p></div><div class="save-state" id="save-state">Sin guardar</div></div>
+
+<div id="error-box" class="alert error hidden"></div>
+{% if initial_payload.get('import_report') %}
+{% set report = initial_payload.get('import_report') %}
+<div class="alert warning import-report">
+  <strong>Excel importado: {{ report.source_filename }}</strong>
+  <span>Se recuperaron {{ report.recovered_sequences }} paso(s) y {{ report.recovered_images }} imagen(es). Revisá todos los campos antes de guardar.</span>
+  {% if report.warnings %}<ul>{% for warning in report.warnings %}<li>{{ warning }}</li>{% endfor %}</ul>{% endif %}
+</div>
+{% endif %}
+<div class="tabs" role="tablist">
+  <button class="tab active" data-tab="general">1. Datos generales</button>
+  <button class="tab" data-tab="sequences">2. Secuencias</button>
+  <button class="tab" data-tab="controls">3. Controles</button>
+  <button class="tab" data-tab="closing">4. Cierre</button>
+</div>
+
+<form id="instruction-form" novalidate>
+  <section class="tab-panel active" data-panel="general">
+    <div class="card form-card"><h2>Encabezado</h2><div class="field-grid">
+      <label><span>Puesto *</span><input name="station" inputmode="numeric" placeholder="08"></label>
+      <label><span>N.º de operación actual</span><input name="operation_number" inputmode="numeric" placeholder="Ej.: 67"></label>
+      <label class="span-2"><span>Nombre corto de la operación *</span><input name="operation_short" placeholder="SOLD. MNL. AMARRE DE CARROCERÍA"></label>
+      <label><span>Código</span><input name="code" placeholder="Puede quedar vacío"></label>
+      <label><span>Revisión *</span><input name="revision" placeholder="1"></label>
+      <label><span>Fecha de emisión *</span><input type="date" name="emission_date"></label>
+      <label><span>Fecha de vigencia *</span><input type="date" name="validity_date"></label>
+      <label class="span-2"><span>Denominación de la operación *</span><textarea name="operation_name" rows="2"></textarea></label>
+      <label class="span-2"><span>Nombre de la pieza *</span><input name="piece_name"></label>
+      <label><span>Modelo</span><input value="ESTÁNDAR" disabled></label>
+    </div></div>
+    <div class="card form-card"><div class="section-head small"><div><h2>Documentación complementaria</h2><p id="automatic-document">SETEO ESTÁNDAR P08 se agregará automáticamente.</p></div><button class="button secondary compact" type="button" data-add="document">Agregar documento</button></div><div id="documents-list" class="repeat-list"></div></div>
+  </section>
+
+  <section class="tab-panel" data-panel="sequences">
+    <div class="section-head"><div><h2>Secuencias de trabajo</h2><p>Cada cinco pasos se crea una hoja numerada. Si una secuencia o resumen queda vacío, se completa como * Incompleto.</p></div><button class="button primary" type="button" data-add="sequence">Agregar paso</button></div>
+    <div id="sequences-list" class="repeat-list sequence-list"></div>
+  </section>
+
+  <section class="tab-panel" data-panel="controls">
+    <div class="alert info"><strong>Carga exclusivamente manual.</strong><span>Podés dejar esta sección vacía. Medición siempre será Visual y muestreo 100%.</span></div>
+    <div class="section-head"><div><h2>Controles de calidad</h2><p>Máximo cinco controles por cada grupo de cinco secuencias.</p></div><button class="button primary" type="button" data-add="control">Agregar control</button></div>
+    <div id="controls-list" class="repeat-list"></div>
+  </section>
+
+  <section class="tab-panel" data-panel="closing">
+    <div class="card form-card"><h2>Próxima operación y responsable</h2><p class="subtle">Este bloque corresponde a la operación siguiente; es distinto del N.º de operación actual del encabezado.</p><div class="field-grid">
+      <label><span>N.º de próxima operación</span><input name="next_operation_number" placeholder="Ej.: 68"></label>
+      <label class="span-2"><span>Descripción de la próxima operación</span><input name="next_operation_name" placeholder="Ej.: GRANALLADO"></label>
+      <label><span>Realizó</span><input name="realized_by"></label>
+    </div></div>
+    <div class="card form-card"><div class="section-head small"><div><h2>IMPORTANTE</h2><p>Opcional. Hasta cuatro líneas por hoja numerada.</p></div><button class="button secondary compact" type="button" data-add="important">Agregar línea</button></div><div id="important-list" class="repeat-list"></div></div>
+    <div class="card form-card"><div class="section-head small"><div><h2>Revisiones</h2><p>Opcional. La plantilla admite hasta tres.</p></div><button class="button secondary compact" type="button" data-add="revision">Agregar revisión</button></div><div id="revisions-list" class="repeat-list"></div></div>
+  </section>
+
+  <div class="form-actions"><a class="button secondary" href="{{ url_for('instructions.instruction_detail', instruction_id=instruction.id) if instruction else url_for('instructions.index') }}">Cancelar</a><button id="save-button" class="button primary" type="submit">Guardar instrucción</button></div>
+</form>
+
+<div id="annotation-modal" class="annotation-modal hidden" role="dialog" aria-modal="true" aria-labelledby="annotation-title">
+  <div class="annotation-dialog">
+    <div class="annotation-header">
+      <div><p class="eyebrow">Editor de fotografía</p><h2 id="annotation-title">Señaladores del paso</h2></div>
+      <button id="annotation-close" class="icon-button" type="button" aria-label="Cerrar editor">✕</button>
+    </div>
+    <div class="annotation-toolbar" aria-label="Herramientas de anotación">
+      <button type="button" class="tool-button" data-annotation-add="arrow">➜ Flecha</button>
+      <button type="button" class="tool-button" data-annotation-add="circle">◯ Círculo</button>
+      <button type="button" class="tool-button" data-annotation-add="rect">□ Rectángulo</button>
+      <label class="annotation-control"><span>Color</span><input id="annotation-color" type="color" value="#ff2b2b"></label>
+      <label class="annotation-control"><span>Espesor</span><input id="annotation-width" type="range" min="2" max="16" value="6"><output id="annotation-width-value">6</output></label>
+      <span class="toolbar-spacer"></span>
+      <button id="annotation-undo" type="button" class="tool-button" disabled>↶ Deshacer</button>
+      <button id="annotation-redo" type="button" class="tool-button" disabled>↷ Rehacer</button>
+      <button id="annotation-delete" type="button" class="tool-button danger" disabled>Eliminar</button>
+    </div>
+    <div id="annotation-loading" class="annotation-loading">Preparando fotografía…</div>
+    <div id="annotation-stage" class="annotation-stage hidden"><canvas id="annotation-canvas"></canvas></div>
+    <p class="annotation-help">Agregá una figura y después arrastrala, girala o cambiale el tamaño. Para corregir una imagen ya aplicada, quitála y cargá nuevamente la fotografía desde la PC.</p>
+    <div class="annotation-actions">
+      <button id="annotation-cancel" class="button secondary" type="button">Cancelar</button>
+      <button id="annotation-apply" class="button primary" type="button">Aplicar señaladores</button>
+    </div>
+  </div>
+</div>
+<script id="initial-payload" type="application/json">{{ initial_payload|tojson }}</script>
+<script>window.INSTRUCTION_ID = {{ instruction.id if instruction else 'null' }};</script>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='vendor/fabric-7.4.0.min.js') }}"></script><script src="{{ url_for('static', filename='form.js') }}"></script>{% endblock %}

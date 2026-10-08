@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Diagnóstico{% endblock %}
+{% block content %}
+<div class="section-head"><div><p class="eyebrow">Estado del sistema</p><h1>Diagnóstico</h1><p>Comprobaciones necesarias para generar el Excel definitivo.</p></div></div>
+<div class="cards">
+{% for check in checks %}<article class="card check"><span class="check-dot {{ 'ok' if check.ok else 'bad' }}"></span><div><h3>{{ check.name }}</h3><p>{{ check.detail }}</p></div><strong>{{ 'Correcto' if check.ok else 'Revisar' }}</strong></article>{% endfor %}
+</div>
+<div class="alert info">Microsoft Excel de escritorio se comprueba al generar el primer archivo. No es obligatorio que sea Microsoft 365, pero debe admitir archivos XLSX y automatización COM. Si hay un problema, la aplicación mostrará el detalle sin modificar la plantilla original.</div>
+{% endblock %}
