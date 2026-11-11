@@ -3,23 +3,32 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}Instrucciones de trabajo{% endblock %}</title>
+  <meta name="theme-color" content="#0b0b0c">
+  <title>{% block title %}Instrucciones de trabajo · Hermann{% endblock %}</title>
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/favicon.png') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="{{ url_for('instructions.index') }}">
-      <span class="brand-mark">IT</span>
-      <span><strong>Instrucciones de trabajo</strong><small>Generador Excel local</small></span>
+    <a class="brand" href="{{ url_for('instructions.index') }}" aria-label="Hermann · Instrucciones de trabajo">
+      <img class="brand-logo" src="{{ url_for('static', filename='img/hermann-logotipo.png') }}" alt="Hermann">
+      <span class="brand-divider" aria-hidden="true"></span>
+      <span class="brand-text"><strong>Instrucciones de trabajo</strong><small>Generador Excel · Uso local</small></span>
     </a>
     <nav>
       <a href="{{ url_for('instructions.index') }}">Inicio</a>
       <a href="{{ url_for('instructions.diagnostics') }}">Diagnóstico</a>
-      <a class="button compact" href="{{ url_for('instructions.new_instruction') }}">Nueva instrucción</a>
+      <a class="button primary compact" href="{{ url_for('instructions.new_instruction') }}">Nueva instrucción</a>
     </nav>
   </header>
+  <div class="brand-stripe" aria-hidden="true"></div>
   <main class="shell">{% block content %}{% endblock %}</main>
-  <footer>Aplicación local · Los datos permanecen en esta computadora.</footer>
+  <footer class="site-footer">
+    <img src="{{ url_for('static', filename='img/hermann-isologo.png') }}" alt="">
+    <span><strong>HERMANN</strong> · Instrucciones de trabajo</span>
+    <span class="footer-sep" aria-hidden="true"></span>
+    <span>Los datos permanecen en esta computadora.</span>
+  </footer>
   {% block scripts %}{% endblock %}
 </body>
 </html>

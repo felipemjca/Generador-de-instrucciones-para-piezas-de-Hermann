@@ -1,17 +1,21 @@
 {% extends "base.html" %}
-{% block title %}Instrucciones de trabajo{% endblock %}
+{% block title %}Instrucciones de trabajo · Hermann{% endblock %}
 {% block content %}
 <section class="hero">
-  <div>
-    <p class="eyebrow">Generador controlado</p>
-    <h1>Creá instrucciones claras a partir de la plantilla definitiva.</h1>
-    <p>Cargá los pasos, imágenes y datos técnicos. La aplicación distribuye cinco secuencias por hoja y prepara VARIOS y VISUAL automáticamente.</p>
+  <div class="hero-copy">
+    <p class="eyebrow">Hermann · Gualeguaychú</p>
+    <h1>Instrucciones de trabajo claras, listas para planta.</h1>
+    <p>Cargá los pasos, imágenes y datos técnicos. La aplicación distribuye cinco secuencias por hoja y prepara VARIOS y VISUAL con el formato definitivo de Hermann.</p>
+    <div class="hero-actions">
+      <a class="button primary" href="{{ url_for('instructions.new_instruction') }}">Crear instrucción</a>
+      <a class="button secondary" href="#importar">Importar Excel</a>
+    </div>
   </div>
-  <a class="button primary" href="{{ url_for('instructions.new_instruction') }}">Crear instrucción</a>
+  <div class="hero-logo"><img src="{{ url_for('static', filename='img/hermann-isologo.png') }}" alt="Isologo Hermann"></div>
 </section>
 
 {% if import_error %}<div class="alert error"><strong>No se pudo importar el Excel.</strong><span>{{ import_error }}</span></div>{% endif %}
-<section class="card import-card">
+<section class="card import-card" id="importar">
   <div>
     <p class="eyebrow">Normalizar un archivo anterior</p>
     <h2>Importar Excel existente</h2>
